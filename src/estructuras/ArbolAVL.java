@@ -1,9 +1,18 @@
 package estructuras;
 import modelos.Libro;
 
+/**
+ * Estructura de datos: Árbol Binario de Búsqueda Balanceado (AVL).
+ * Se encarga de almacenar y gestionar el inventario de libros de manera eficiente
+ * manteniendo un balance automático O(log n) para búsquedas e inserciones.
+ */
 public class ArbolAVL {
+    /** Nodo raíz principal del árbol. */
     public ElementoArbol raiz;
 
+    /**
+     * Constructor por defecto. Inicializa un árbol vacío.
+     */
     public ArbolAVL() {
         this.raiz = null;
     }
@@ -16,8 +25,16 @@ public class ArbolAVL {
         return (elemento == null) ? 0 : obtenerAltura(elemento.izquierdo) - obtenerAltura(elemento.derecho);
     }
 
-    private int maximo(int a, int b) {
-        return (a > b) ? a : b;
+    /**
+     * Calcula el valor máximo entre dos números enteros.
+     * Utilizado para recalcular la altura de los nodos tras inserciones o rotaciones.
+     *
+     * @param valorA Primer valor a comparar.
+     * @param valorB Segundo valor a comparar.
+     * @return El número mayor entre valorA y valorB.
+     */
+    private int maximo(int valorA, int valorB) {
+        return (valorA > valorB) ? valorA : valorB;
     }
 
     private ElementoArbol rotarDerecha(ElementoArbol elementoDesbalanceado) {
@@ -46,6 +63,12 @@ public class ArbolAVL {
         return nuevoElementoArriba;
     }
 
+    /**
+     * Inserta un nuevo libro en el árbol AVL de forma ordenada según su código.
+     * Posteriormente, se encarga de rebalancear el árbol si la inserción causa un desequilibrio.
+     *
+     * @param libro El libro instanciado a insertar.
+     */
     public void insertar(Libro libro) {
         this.raiz = insertarRecursivo(this.raiz, libro);
     }
@@ -82,6 +105,12 @@ public class ArbolAVL {
         return elementoActual;
     }
 
+    /**
+     * Elimina un libro del árbol utilizando su código como clave de búsqueda.
+     * Garantiza que el árbol se reestructure y mantenga sus propiedades AVL.
+     *
+     * @param codigo El código único del libro a eliminar.
+     */
     public void eliminar(String codigo) {
         this.raiz = eliminarRecursivo(this.raiz, codigo);
     }
@@ -136,6 +165,12 @@ public class ArbolAVL {
         return auxiliarActual;
     }
 
+    /**
+     * Busca un libro dentro del árbol utilizando una búsqueda binaria eficiente O(log n).
+     *
+     * @param codigo El código del libro a buscar.
+     * @return El objeto Libro si es encontrado, o null en caso contrario.
+     */
     public Libro buscar(String codigo) {
         return buscarRecursivo(this.raiz, codigo);
     }

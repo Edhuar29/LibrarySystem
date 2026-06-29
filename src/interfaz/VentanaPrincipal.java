@@ -10,6 +10,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
+/**
+ * Interfaz Gráfica Principal del sistema de biblioteca.
+ * Implementada con Java Swing, coordina las interacciones del usuario
+ * y delega las operaciones lógicas a la clase BibliotecaServicio.
+ */
 public class VentanaPrincipal extends JFrame {
     private BibliotecaServicio servicio;
     
@@ -18,8 +23,6 @@ public class VentanaPrincipal extends JFrame {
     private JTextArea areaConsola;
     private JTextArea areaCola; 
     
-    private JTextField txtCodigo, txtTitulo, txtAutor, txtAnio, txtMateria;
-    private JTextField txtSolicitudCodigo, txtSolicitudEstudiante, txtSolicitudCedula, txtSolicitudCarrera;
     private JTextField txtBuscarCodigo;
     private JTextField txtReporteAutor;
     private JComboBox comboCriterioOrden;
@@ -59,24 +62,20 @@ public class VentanaPrincipal extends JFrame {
         JPanel p = new JPanel(new BorderLayout(10, 10));
         p.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         
-        JPanel pForm = new JPanel(new GridLayout(6, 2, 5, 5));
-        pForm.setBorder(BorderFactory.createTitledBorder("Registro de Libro"));
+        JPanel pForm = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 15));
+        pForm.setBorder(BorderFactory.createTitledBorder("Opciones de Catálogo"));
         
-        pForm.add(new JLabel("Código Numérico:")); txtCodigo = new JTextField(); pForm.add(txtCodigo);
-        pForm.add(new JLabel("Título:")); txtTitulo = new JTextField(); pForm.add(txtTitulo);
-        pForm.add(new JLabel("Autor:")); txtAutor = new JTextField(); pForm.add(txtAutor);
-        pForm.add(new JLabel("Año:")); txtAnio = new JTextField(); pForm.add(txtAnio);
-        pForm.add(new JLabel("Materia:")); txtMateria = new JTextField(); pForm.add(txtMateria);
-        
-        JButton btnRegistrar = new JButton("Registrar Libro");
-        btnRegistrar.addActionListener(new ActionListener() {
+        JButton btnAbrirFormularioLibro = new JButton("Abrir Formulario: Nuevo Libro");
+        btnAbrirFormularioLibro.setPreferredSize(new Dimension(250, 40));
+        btnAbrirFormularioLibro.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                registrarLibro();
+                mostrarFormularioLibro();
             }
         });
-        pForm.add(btnRegistrar);
+        pForm.add(btnAbrirFormularioLibro);
         
-        JButton btnEliminar = new JButton("Eliminar por Código (Buscar en caja de Código)");
+        JButton btnEliminar = new JButton("Eliminar Libro");
+        btnEliminar.setPreferredSize(new Dimension(200, 40));
         btnEliminar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 eliminarLibro();
@@ -106,49 +105,20 @@ public class VentanaPrincipal extends JFrame {
         JPanel p = new JPanel(new BorderLayout(10,10));
         p.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         
-        JPanel pForm = new JPanel(new GridLayout(5, 2, 5, 5));
-        pForm.setBorder(BorderFactory.createTitledBorder("Nueva Solicitud"));
+        JPanel pForm = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 15));
+        pForm.setBorder(BorderFactory.createTitledBorder("Opciones de Préstamos"));
         
-        pForm.add(new JLabel("Código Libro:")); txtSolicitudCodigo = new JTextField(); pForm.add(txtSolicitudCodigo);
-        pForm.add(new JLabel("ID Estudiante (Nombre):")); txtSolicitudEstudiante = new JTextField(); pForm.add(txtSolicitudEstudiante);
-        pForm.add(new JLabel("Cédula:")); txtSolicitudCedula = new JTextField(); pForm.add(txtSolicitudCedula);
-        pForm.add(new JLabel("Carrera:")); txtSolicitudCarrera = new JTextField(); pForm.add(txtSolicitudCarrera);
-        
-        JButton btnEncolar = new JButton("Añadir a Cola de Espera");
-        btnEncolar.addActionListener(new ActionListener() {
+        JButton btnAbrirFormularioPrestamo = new JButton("Abrir Formulario: Nueva Solicitud");
+        btnAbrirFormularioPrestamo.setPreferredSize(new Dimension(250, 40));
+        btnAbrirFormularioPrestamo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String cod = txtSolicitudCodigo.getText().trim();
-                String est = txtSolicitudEstudiante.getText().trim();
-                String ced = txtSolicitudCedula.getText().trim();
-                String car = txtSolicitudCarrera.getText().trim();
-                
-                if (cod.isEmpty() || est.isEmpty() || ced.isEmpty() || car.isEmpty()) {
-                    areaConsola.setText("Error: Debes completar todos los datos para la solicitud.");
-                    return;
-                }
-                
-                if (!ced.matches("\\d{10}")) {
-                    areaConsola.setText("Error: La Cédula debe contener exactamente 10 números.");
-                    return;
-                }
-                
-                if (!car.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+")) {
-                    areaConsola.setText("Error: La Carrera debe contener solo letras (Ej: Computacion).");
-                    return;
-                }
-                
-                servicio.encolarSolicitudPrestamo(new SolicitudPrestamo(cod, est, ced, car));
-                areaConsola.setText("Solicitud agregada a la cola exitosamente.");
-                txtSolicitudCodigo.setText("");
-                txtSolicitudEstudiante.setText("");
-                txtSolicitudCedula.setText("");
-                txtSolicitudCarrera.setText("");
-                areaCola.setText(servicio.obtenerTextoColaEspera());
+                mostrarFormularioPrestamo();
             }
         });
-        pForm.add(btnEncolar);
+        pForm.add(btnAbrirFormularioPrestamo);
         
-        JButton btnAtender = new JButton("Atender Siguiente");
+        JButton btnAtender = new JButton("Atender Siguiente Solicitud");
+        btnAtender.setPreferredSize(new Dimension(250, 40));
         btnAtender.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String res = servicio.atenderSiguientePrestamo();
@@ -247,8 +217,8 @@ public class VentanaPrincipal extends JFrame {
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         
-        JPanel pBotones = new JPanel(new GridLayout(6, 1, 10, 10));
-        pBotones.setPreferredSize(new Dimension(400, 300));
+        JPanel pBotones = new JPanel(new GridLayout(7, 1, 10, 10));
+        pBotones.setPreferredSize(new Dimension(400, 350));
         
         JButton btnRep1 = new JButton("Reporte 1: Existencias Totales");
         btnRep1.addActionListener(new ActionListener() {
@@ -303,78 +273,206 @@ public class VentanaPrincipal extends JFrame {
         });
         pBotones.add(btnBitacora);
         
+        JButton btnExportarBitacora = new JButton("Exportar Bitácora a Archivo (.txt)");
+        btnExportarBitacora.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String rutaExportacion = "bitacora_exportada.txt";
+                boolean exito = servicio.exportarBitacora(rutaExportacion);
+                if (exito) {
+                    areaConsola.setText("ÉXITO: La bitácora ha sido exportada correctamente al archivo: " + rutaExportacion);
+                } else {
+                    areaConsola.setText("ERROR: No se pudo exportar la bitácora.");
+                }
+            }
+        });
+        pBotones.add(btnExportarBitacora);
+        
         p.add(pBotones, BorderLayout.WEST);
         
         return p;
     }
+
+    private void mostrarFormularioLibro() {
+        JDialog dialog = new JDialog(this, "Registrar Nuevo Libro", true);
+        dialog.setSize(400, 300);
+        dialog.setLocationRelativeTo(this);
+        
+        JPanel pForm = new JPanel(new GridLayout(6, 2, 10, 10));
+        pForm.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        
+        JTextField tCodigo = new JTextField();
+        JTextField tTitulo = new JTextField();
+        JTextField tAutor = new JTextField();
+        JTextField tAnio = new JTextField();
+        JTextField tMateria = new JTextField();
+        
+        pForm.add(new JLabel("Código Numérico:")); pForm.add(tCodigo);
+        pForm.add(new JLabel("Título:")); pForm.add(tTitulo);
+        pForm.add(new JLabel("Autor:")); pForm.add(tAutor);
+        pForm.add(new JLabel("Año:")); pForm.add(tAnio);
+        pForm.add(new JLabel("Materia:")); pForm.add(tMateria);
+        
+        JButton btnGuardar = new JButton("Guardar Libro");
+        btnGuardar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (procesarRegistroLibro(tCodigo.getText(), tTitulo.getText(), tAutor.getText(), tAnio.getText(), tMateria.getText())) {
+                    dialog.dispose();
+                }
+            }
+        });
+        
+        JButton btnCancelar = new JButton("Cancelar");
+        btnCancelar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose();
+            }
+        });
+        
+        JPanel pBotones = new JPanel();
+        pBotones.add(btnGuardar);
+        pBotones.add(btnCancelar);
+        
+        dialog.add(pForm, BorderLayout.CENTER);
+        dialog.add(pBotones, BorderLayout.SOUTH);
+        dialog.setVisible(true);
+    }
     
-    private void registrarLibro() {
+    private boolean procesarRegistroLibro(String codStr, String tit, String aut, String anioStr, String mat) {
         try {
-            String codStr = txtCodigo.getText().trim();
-            String tit = txtTitulo.getText().trim();
-            String aut = txtAutor.getText().trim();
-            String mat = txtMateria.getText().trim();
-            String anioStr = txtAnio.getText().trim();
+            codStr = codStr.trim(); tit = tit.trim(); aut = aut.trim(); mat = mat.trim(); anioStr = anioStr.trim();
             
             if (codStr.isEmpty() || tit.isEmpty() || aut.isEmpty() || mat.isEmpty() || anioStr.isEmpty()) {
-                areaConsola.setText("Error: Debes completar todos los campos del formulario para registrar un libro.");
-                return;
+                JOptionPane.showMessageDialog(this, "Debes completar todos los campos del formulario.", "Error", JOptionPane.ERROR_MESSAGE);
+                return false;
             }
             
             if (!codStr.matches("\\d+")) {
-                areaConsola.setText("Error: El Código debe contener únicamente números (Ej: 101, 202).");
-                return;
+                JOptionPane.showMessageDialog(this, "El Código debe contener únicamente números.", "Error", JOptionPane.ERROR_MESSAGE);
+                return false;
             }
             
             if (!tit.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+")) {
-                areaConsola.setText("Error: El Título debe contener solo letras (Ej: Calculo Diferencial).");
-                return;
+                JOptionPane.showMessageDialog(this, "El Título debe contener solo letras.", "Error", JOptionPane.ERROR_MESSAGE);
+                return false;
             }
             
             if (tit.length() < 3) {
-                areaConsola.setText("Error: El Título es muy corto o inválido (Ej: Programacion Avanzada).");
-                return;
+                JOptionPane.showMessageDialog(this, "El Título es muy corto.", "Error", JOptionPane.ERROR_MESSAGE);
+                return false;
             }
             
             if (!aut.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+")) {
-                areaConsola.setText("Error: El Autor debe contener solo letras (Ej: Gabriel Garcia).");
-                return;
+                JOptionPane.showMessageDialog(this, "El Autor debe contener solo letras.", "Error", JOptionPane.ERROR_MESSAGE);
+                return false;
             }
             
             if (!mat.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+")) {
-                areaConsola.setText("Error: La Materia debe contener solo letras (Ej: Ciencias).");
-                return;
+                JOptionPane.showMessageDialog(this, "La Materia debe contener solo letras.", "Error", JOptionPane.ERROR_MESSAGE);
+                return false;
             }
             
             int anio = Integer.parseInt(anioStr);
             int anioActual = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR);
             if (anio < 1400 || anio > anioActual) {
-                areaConsola.setText("Error: El año está fuera de rango (debe estar entre 1400 y " + anioActual + ").");
-                return;
+                JOptionPane.showMessageDialog(this, "El año está fuera de rango (1400 - " + anioActual + ").", "Error", JOptionPane.ERROR_MESSAGE);
+                return false;
             }
             
             Libro l = new Libro(codStr, tit, aut, anio, mat);
             boolean registrado = servicio.registrarLibro(l);
             if (registrado) {
                 areaConsola.setText("Libro registrado con éxito.");
-                txtCodigo.setText(""); txtTitulo.setText(""); txtAutor.setText(""); txtAnio.setText(""); txtMateria.setText("");
+                actualizarTabla();
+                return true;
             } else {
-                areaConsola.setText("Error: Ya existe un libro registrado con el código " + codStr + ".");
+                JOptionPane.showMessageDialog(this, "Ya existe un libro registrado con el código " + codStr + ".", "Error", JOptionPane.ERROR_MESSAGE);
+                return false;
             }
-            actualizarTabla();
         } catch(NumberFormatException e) {
-            areaConsola.setText("Error: El año debe ser un número entero.");
+            JOptionPane.showMessageDialog(this, "El año debe ser un número entero.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
         } catch(Exception e) {
-            areaConsola.setText("Error inesperado en los datos.");
+            JOptionPane.showMessageDialog(this, "Error inesperado en los datos.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
         }
+    }
+
+    private void mostrarFormularioPrestamo() {
+        JDialog dialog = new JDialog(this, "Nueva Solicitud de Préstamo", true);
+        dialog.setSize(400, 250);
+        dialog.setLocationRelativeTo(this);
+        
+        JPanel pForm = new JPanel(new GridLayout(5, 2, 10, 10));
+        pForm.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        
+        JTextField tCodigo = new JTextField();
+        JTextField tEstudiante = new JTextField();
+        JTextField tCedula = new JTextField();
+        JTextField tCarrera = new JTextField();
+        
+        pForm.add(new JLabel("Código Libro:")); pForm.add(tCodigo);
+        pForm.add(new JLabel("ID Estudiante (Nombre):")); pForm.add(tEstudiante);
+        pForm.add(new JLabel("Cédula (10 dígitos):")); pForm.add(tCedula);
+        pForm.add(new JLabel("Carrera:")); pForm.add(tCarrera);
+        
+        JButton btnGuardar = new JButton("Añadir a Cola");
+        btnGuardar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (procesarSolicitudPrestamo(tCodigo.getText(), tEstudiante.getText(), tCedula.getText(), tCarrera.getText())) {
+                    dialog.dispose();
+                }
+            }
+        });
+        
+        JButton btnCancelar = new JButton("Cancelar");
+        btnCancelar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose();
+            }
+        });
+        
+        JPanel pBotones = new JPanel();
+        pBotones.add(btnGuardar);
+        pBotones.add(btnCancelar);
+        
+        dialog.add(pForm, BorderLayout.CENTER);
+        dialog.add(pBotones, BorderLayout.SOUTH);
+        dialog.setVisible(true);
+    }
+    
+    private boolean procesarSolicitudPrestamo(String cod, String est, String ced, String car) {
+        cod = cod.trim(); est = est.trim(); ced = ced.trim(); car = car.trim();
+        
+        if (cod.isEmpty() || est.isEmpty() || ced.isEmpty() || car.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Debes completar todos los datos para la solicitud.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        
+        if (!ced.matches("\\d{10}")) {
+            JOptionPane.showMessageDialog(this, "La Cédula debe contener exactamente 10 números.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        
+        if (!car.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+")) {
+            JOptionPane.showMessageDialog(this, "La Carrera debe contener solo letras (Ej: Computacion).", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        
+        servicio.encolarSolicitudPrestamo(new SolicitudPrestamo(cod, est, ced, car));
+        areaConsola.setText("Solicitud agregada a la cola exitosamente.");
+        areaCola.setText(servicio.obtenerTextoColaEspera());
+        return true;
     }
     
     private void eliminarLibro() {
-        if(servicio.eliminarLibro(txtCodigo.getText())) {
-            areaConsola.setText("Libro eliminado con éxito.");
-            actualizarTabla();
-        } else {
-            areaConsola.setText("El código no existe.");
+        String codigoStr = JOptionPane.showInputDialog(this, "Ingrese el código del libro a eliminar:", "Eliminar Libro", JOptionPane.QUESTION_MESSAGE);
+        if (codigoStr != null && !codigoStr.trim().isEmpty()) {
+            if(servicio.eliminarLibro(codigoStr.trim())) {
+                areaConsola.setText("Libro eliminado con éxito.");
+                actualizarTabla();
+            } else {
+                areaConsola.setText("El código no existe en el catálogo.");
+            }
         }
     }
     
@@ -386,7 +484,7 @@ public class VentanaPrincipal extends JFrame {
                 areaConsola.setText("Archivo cargado con éxito.");
                 actualizarTabla();
             } else {
-                areaConsola.setText("Error al cargar el archivo de datos.");
+                areaConsola.setText("Error al cargar el archivo de datos. Revise que el formato sea correcto y no esté corrupto.");
             }
         }
     }

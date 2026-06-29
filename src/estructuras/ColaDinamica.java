@@ -1,15 +1,32 @@
 package estructuras;
 import modelos.SolicitudPrestamo;
 
+/**
+ * Estructura de datos dinámica: Cola (Queue - FIFO: First In, First Out).
+ * Se encarga de gestionar la fila de espera de estudiantes que desean solicitar un libro,
+ * garantizando que sean atendidos en el orden exacto de llegada.
+ */
 public class ColaDinamica {
+    /** Puntero al primer nodo de la cola (el próximo a ser atendido). */
     public NodoCola frente;
+    
+    /** Puntero al último nodo de la cola (el recién ingresado). */
     public NodoCola finalCola;
 
+    /**
+     * Constructor por defecto. Inicializa una cola vacía.
+     */
     public ColaDinamica() {
         this.frente = null;
         this.finalCola = null;
     }
 
+    /**
+     * Inserta una nueva solicitud al final de la fila de espera.
+     * Operación con complejidad O(1).
+     *
+     * @param solicitud La información del préstamo y estudiante a encolar.
+     */
     public void encolar(SolicitudPrestamo solicitud) {
         NodoCola nuevoNodo = new NodoCola(solicitud);
         if (this.finalCola == null) {
@@ -20,6 +37,12 @@ public class ColaDinamica {
         this.finalCola = nuevoNodo;
     }
 
+    /**
+     * Extrae y retorna la solicitud que se encuentra al frente de la fila.
+     * Operación con complejidad O(1).
+     *
+     * @return La solicitud extraída, o null si la cola estaba vacía.
+     */
     public SolicitudPrestamo desencolar() {
         if (this.frente == null) return null;
         
@@ -32,6 +55,12 @@ public class ColaDinamica {
         return nodoExtraido.solicitud;
     }
 
+    /**
+     * Recorre la cola sin alterarla y genera una representación textual de todos los turnos.
+     * Útil para actualizar la interfaz gráfica.
+     *
+     * @return Una cadena formateada con todos los turnos, o un mensaje si está vacía.
+     */
     public String obtenerTextoCola() {
         StringBuilder stringBuilderContenedor = new StringBuilder();
         NodoCola actual = frente;

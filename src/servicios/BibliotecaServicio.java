@@ -8,11 +8,25 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * Servicio central del sistema (Controlador).
+ * Orquesta la interacción entre las estructuras de datos (Árbol, Cola, Listas)
+ * y la persistencia física en archivos de texto.
+ */
 public class BibliotecaServicio {
+    /** Estructura lineal para recorrer el inventario. */
     public ListaCatalogo catalogo;   
+    
+    /** Historial de transacciones de préstamos. */
     public ListaBitacora bitacora;   
+    
+    /** Motor de búsqueda e índice principal O(log n). */
     public ArbolAVL indiceArbol;           
+    
+    /** Fila de espera de estudiantes. */
     public ColaDinamica colaPrestamos;     
+    
+    /** Ruta relativa o absoluta del archivo de base de datos. */
     private String rutaBaseDatosActual = "base_datos.txt"; 
 
     private Libro[] catálogoOrdenadoTemporal;
@@ -61,8 +75,8 @@ public class BibliotecaServicio {
                 actual = actual.siguiente;
             }
             escritorTexto.close();
-        } catch (Exception e) {
-            System.out.println("Error al actualizar el archivo de base de datos.");
+        } catch (IOException e) {
+            registrarAccionEnBitacora("ERROR CRÍTICO: No se pudo guardar la base de datos.");
         }
     }
 
@@ -95,7 +109,14 @@ public class BibliotecaServicio {
             
             registrarAccionEnBitacora("Archivo origen cargado y fusionado correctamente: " + archivoSeleccionado.getName());
             return true;
+        } catch (IOException e) {
+            registrarAccionEnBitacora("ERROR CRÍTICO: No se pudo leer el archivo de base de datos.");
+            return false;
+        } catch (NumberFormatException e) {
+            registrarAccionEnBitacora("ERROR CRÍTICO: Archivo corrupto. Formato de número inválido.");
+            return false;
         } catch (Exception e) {
+            registrarAccionEnBitacora("ERROR CRÍTICO: Fallo general al cargar base de datos.");
             return false;
         }
     }
@@ -160,6 +181,29 @@ public class BibliotecaServicio {
             actual = actual.siguiente;
         }
         return sb.toString();
+    }
+
+    /**
+     * Exporta todo el contenido actual de la bitácora a un archivo de texto físico.
+     *
+     * @param rutaDestino La ruta donde se guardará el archivo (ej. "bitacora.txt").
+     * @return true si se exportó con éxito, false en caso contrario.
+     */
+    public boolean exportarBitacora(String rutaDestino) {
+        try {
+            FileWriter escritorArchivo = new FileWriter(rutaDestino, false);
+            PrintWriter escritorTexto = new PrintWriter(escritorArchivo);
+            ElementoLista actual = bitacora.cabeza;
+            while (actual != null) {
+                escritorTexto.println(actual.accionBitacora);
+                actual = actual.siguiente;
+            }
+            escritorTexto.close();
+            return true;
+        } catch (IOException e) {
+            registrarAccionEnBitacora("ERROR CRÍTICO: No se pudo exportar la bitácora a " + rutaDestino);
+            return false;
+        }
     }
 
     public String ordenarPorBubbleSort() {
@@ -377,13 +421,13 @@ public class BibliotecaServicio {
         for (int i = 0; i < totalMaterias - 1; i++) {
             for (int j = 0; j < totalMaterias - i - 1; j++) {
                 if (frecuenciasMateria[j] < frecuenciasMateria[j+1]) {
-                    int auxF = frecuenciasMateria[j];
+                    int frecuenciaTemporal = frecuenciasMateria[j];
                     frecuenciasMateria[j] = frecuenciasMateria[j+1];
-                    frecuenciasMateria[j+1] = auxF;
+                    frecuenciasMateria[j+1] = frecuenciaTemporal;
                     
-                    String auxM = materias[j];
+                    String materiaTemporal = materias[j];
                     materias[j] = materias[j+1];
-                    materias[j+1] = auxM;
+                    materias[j+1] = materiaTemporal;
                 }
             }
         }
